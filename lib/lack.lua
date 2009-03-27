@@ -14,6 +14,8 @@ local ret_codes = {
 
 local format_response = function (ret)
 
+  if type(ret) == 'string' then ret = { 200, {}, ret } end
+
   res = {} 
   res[#res + 1] = 'HTTP/1.1 ' .. ret[1] .. ' ' .. ret_codes[ret[1]]
  
@@ -41,6 +43,10 @@ local prepare_env = function (socket)
   end
 
   local method, full_path = raw[1]:match('^(.-) (.-) .-')
+  local path, query_string = full_path:match('^(.-)?(.-)$')
+  path = path or full_path
+
+  -- TODO parse queries
 
   local headers = {}
   for i = 2, #raw do
@@ -48,12 +54,14 @@ local prepare_env = function (socket)
     headers[k] = v
   end
 
-  -- do something if there is 'Content-Length'
+  -- TODO do something if there is 'Content-Length'
 
   return {
     ['raw'] = raw,
     ['full_path'] = full_path,
-    ['REQUEST_METHOD'] = method,
+    ['path'] = path,
+    ['request_method'] = method,
+    ['query_string'] = query_string,
     ['headers'] = headers
   }
 end
@@ -75,9 +83,13 @@ end
 --
 -- the 'run' method
 
+-- TODO : allow to wire stuff into the loop
+
 run = function (host, port, middleware)
+
   server = socket.bind(host, port)
   copas.addserver(server, make_handler(middleware))
+
   copas.loop()
 end
 
