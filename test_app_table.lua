@@ -1,8 +1,6 @@
 
 --
--- run me with
---
---   lua test_raw_2.lua
+-- app is a table with a 'call' key (pointing to a function(self, env))
 --
 
 package.path = package.path .. ';lib/?.lua'
@@ -11,7 +9,7 @@ require 'luarocks.require'
 require 'lack'
 
 local app = {}
-app.call = function (env)
+app.call = function (self, env)
   return { 200, {}, "tables or functions" }
 end
 

@@ -1,8 +1,6 @@
 
 --
--- run me with
---
---   lua test_raw.lua
+-- app is a simple function
 --
 
 package.path = package.path .. ';lib/?.lua'

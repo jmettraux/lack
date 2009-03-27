@@ -60,12 +60,14 @@ end
 
 local make_handler = function (middleware)
 
-  local call = middleware
-  if type(middleware) == 'table' then call = middleware.call end
+  local mid = middleware
+  if type(middleware) == 'function' then
+    mid = { ['call'] = function(self, env) return middleware(env) end }
+  end
 
   return function (socket)
     local env = prepare_env(socket)
-    local ret = call(env)
+    local ret = mid:call(env)
     copas.send(socket, format_response(ret))
   end
 end
